@@ -34,6 +34,7 @@ pub fn run(server: &SocketAddr, shell: &Shell) -> Result<(), Error> {
     // Spawn the driver binary, collecting its stdout/stderr in separate
     // threads. We'll print this output later.
     shell.status("Spawning Geckodriver...");
+    println!("Sawning Geckodriver...");
 
     let mut cmd = Command::new(driver.path());
     cmd.arg("--version");
@@ -69,6 +70,7 @@ pub fn run(server: &SocketAddr, shell: &Shell) -> Result<(), Error> {
         session: None,
     };
     shell.status("Starting new webdriver session...");
+    println!("Starting new webdriver session...");
     // Allocate a new session with the webdriver protocol, and once we've done
     // so schedule the browser to get closed with a call to `close_window`.
     let id = client.new_session(&driver)?;
@@ -78,8 +80,10 @@ pub fn run(server: &SocketAddr, shell: &Shell) -> Result<(), Error> {
     // some handles to objects on the page which we'll be scraping output from.
     let url = format!("http://{}", server);
     shell.status(&format!("Visiting {}...", url));
+    println!("Visting {}...", url);
     client.goto(&id, &url)?;
     shell.status("Loading page elements...");
+    println!("Loading page elements...");
     let output = client.element(&id, "#output")?;
     let logs = client.element(&id, "#console_log")?;
     let errors = client.element(&id, "#console_error")?;
@@ -98,6 +102,7 @@ pub fn run(server: &SocketAddr, shell: &Shell) -> Result<(), Error> {
     //       this on the page and look for such output here, printing diagnostic
     //       information.
     shell.status("Waiting for test to finish...");
+    println!("Waiting for test to finish...");
     let start = Instant::now();
     let max = Duration::new(20, 0);
     while start.elapsed() < max {
