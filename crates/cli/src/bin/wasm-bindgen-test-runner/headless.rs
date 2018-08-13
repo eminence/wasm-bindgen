@@ -34,6 +34,14 @@ pub fn run(server: &SocketAddr, shell: &Shell) -> Result<(), Error> {
     // Spawn the driver binary, collecting its stdout/stderr in separate
     // threads. We'll print this output later.
     shell.status("Spawning Geckodriver...");
+
+    let mut cmd = Command::new(driver.path());
+    cmd.arg("--version");
+    if let Ok(output) = cmd.output() {
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        println!("  {}", stdout.lines().next().unwrap_or("unknown geckodriver version"));
+    }
+
     let mut cmd = Command::new(driver.path());
     cmd.args(&args)
         .arg(format!("--port={}", driver_addr.port().to_string()));
